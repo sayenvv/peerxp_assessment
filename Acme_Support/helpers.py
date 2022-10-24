@@ -13,11 +13,11 @@ class EmailOrUsernameModelBackend(ModelBackend):
             kwargs = {'email': username}
         else:
             kwargs = {'phone': username}
-        user = get_user_model().objects.get(**kwargs)
         try:
+            user = get_user_model().objects.get(**kwargs)
             if user.check_password(password):
                 return user
-        except user.DoesNotExist:
+        except Exception:
             return None
 
     def get_user(self, username):

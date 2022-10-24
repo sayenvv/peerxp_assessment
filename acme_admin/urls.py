@@ -35,6 +35,11 @@ urlpatterns = [
         path('add-roles',CreateRolesView.as_view(),name='add_roles'),
         path('set-permissions/<int:slug>',SetPermissionsView.as_view(),name='set_permissions'),
 
+    ])),
+
+    path('tickets/',include([
+        path('my-tickets',TicketVIEW.as_view(),name='list_ticket'),
+
     ]))
     
 

@@ -22,6 +22,11 @@ class IndexView(TemplateView):
     '''
     template_name = "index.html"
 
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['user'] = get_user_model().objects.get(pk=self.request.session.get('user',None))
+        return context
+
 
 class SignInView(View):
     '''
@@ -40,7 +45,7 @@ class SignInView(View):
           we can pass any data to template using context or simple we can use locals func
           to pass all local variables to template.....
         '''
-        if request.user.is_authenticated:
+        if request.session.get('user',None) is not None:
             return redirect(self.redirect_url)
         return render(request,self.render_template,locals())
 
@@ -61,9 +66,14 @@ class SignInView(View):
 class LogoutView(View):
 
     def get(self,request):
-        if request.user.is_authenticated:
-            logout(request)
+        session = request.session.get('user',None)
+        if session is not None:
+            try:
+                del request.session['user']
+            except Exception:
+                pass
             return redirect('signin')
+        return redirect('signin')
         
 
 class ListRolesView(ListView):
@@ -75,7 +85,7 @@ class ListRolesView(ListView):
 
     def get(self,request):
         queryset = self.get_queryset()
-        print(queryset,"lklklklk")
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         return render(request,self.render_template,locals())
 
 class CreateRolesView(CreateView):
@@ -93,12 +103,13 @@ class CreateRolesView(CreateView):
     redirect_url = 'list_roles'
 
     def get(self,request):
-        print(Group.objects.all())
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         forms = self.form_class()
         return render(request,self.render_template,locals())
 
     def post(self,request):
         form = self.form_class(request.POST)
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         if form.is_valid():
             form.save()
             return redirect(self.redirect_url)
@@ -122,6 +133,7 @@ class SetPermissionsView(DetailView):
     redirect_url = 'list_roles'
 
     def get(self,request,**kwargs):
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         roles_id = kwargs.get('slug')
         forms = self.form_class(initial={
             'permissions' : self.model.objects.get(id=roles_id).permissions.all(),
@@ -133,6 +145,7 @@ class SetPermissionsView(DetailView):
 
     def post(self,request,**kwargs):
         roles_id = kwargs.get('slug')
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         form = self.form_class(request.POST,instance=self.model.objects.get(pk=roles_id))
         if form.is_valid():
             form.save()
@@ -147,6 +160,7 @@ class ListDepartmentView(ListView):
     render_template = 'departments/list_departments.html'
 
     def get(self,request):
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         queryset = self.get_queryset()
         print(queryset,"lll")
         return render(request,self.render_template,locals())
@@ -167,11 +181,12 @@ class CreateDepartmentsView(CreateView):
     redirect_url = 'list_departments'
 
     def get(self,request):
-        print(Group.objects.all())
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         forms = self.form_class()
         return render(request,self.render_template,locals())
 
     def post(self,request):
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         form = self.form_class(request.POST)
         if form.is_valid():
             form.save()
@@ -184,6 +199,7 @@ class UpdateDepartmentsView(UpdateView):
     render_template = 'departments/update_department.html'
 
     def get(self,request,**kwargs):
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         department_id = kwargs.get('slug')
         forms = self.form_class(initial={
             'name' : self.model.objects.get(pk=department_id).name,
@@ -194,6 +210,7 @@ class UpdateDepartmentsView(UpdateView):
 
     def post(self,request,**kwargs):
         department_id = kwargs.get('slug')
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         forms = self.form_class(request.POST,instance=self.model.objects.get(pk=department_id))
         if forms.is_valid():
             forms.save()
@@ -220,6 +237,7 @@ class ListUsersView(ListView):
     render_template = 'list_users.html'
 
     def get(self,request):
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         queryset = self.get_queryset().filter(is_user=True)
         return render(request,self.render_template,locals())
 
@@ -239,11 +257,12 @@ class CreateUsersView(CreateView):
     redirect_url = 'list_users'
 
     def get(self,request):
-        print(Group.objects.all())
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         forms = self.form_class()
         return render(request,self.render_template,locals())
 
     def post(self,request):
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         forms = self.form_class(request.POST)
         if forms.is_valid():
             forms.save(request)
@@ -258,6 +277,7 @@ class AssignDepartmentView(UpdateView):
     form_class = AssignDepartmentForm
 
     def get(self,request,**kwargs):
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         pk = kwargs.get('pk')
         queryset = self.model.objects.filter(id=pk)
         forms = self.form_class(initial={
@@ -268,9 +288,15 @@ class AssignDepartmentView(UpdateView):
 
     def post(self,request,**kwargs):
         pk = kwargs.get('pk')
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
         forms = self.form_class(request.POST,instance=self.model.objects.get(pk=pk)) 
         if forms.is_valid():
             forms.save()
             return redirect('list_users')
         return render(request,self.render_template)
 
+
+class TicketVIEW(View):
+
+    def get(self,request):
+        return

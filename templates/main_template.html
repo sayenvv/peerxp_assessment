@@ -61,18 +61,20 @@
                     <a class="image" href="profile.html"><img src="/static/images/profile_av.jpg" alt="User"></a>
                     <div class="detail">
                                       
-                        <h4>{{request.user.username}}</h4>
-                        {% if request.user.is_user %}
-                        <small>User</small>   
-                        {% else %}                     
-                        <small>{{request.user.user_roles}}</small>  
+                        {% if user is not None %}
+                        <h4>{{user.username}}</h4>
+                            {% if user.is_user %}
+                            <small>User</small>   
+                            {% else %}                     
+                            <small>{{user.user_roles}}</small>  
+                            {% endif %}  
                         {% endif %}  
                     </div>
                 </div>
             </li>
-            <li class="active open"><a href="{% url 'index_url' %}"><i class="zmdi zmdi-home"></i><span>{{ get_current_user|request }}</span></a></li>
-            {% if request.user.is_user %}
-            <li class="custom_toggle"><a href="{% url 'list_users' %}" class="menu-toggle"><i class="zmdi zmdi-apps"></i><span>USERS</span></a>
+            <li class="active open"><a href="{% url 'index_url' %}"><i class="zmdi zmdi-home"></i><span>DASHBOARD</span></a></li>
+            {% if user.is_user %}
+            <li class="custom_toggle"><a href="{% url 'list_ticket' %}" class="menu-toggle"><i class="zmdi zmdi-apps"></i><span>My tickets</span></a>
                 
             </li>
             {% else %}
@@ -93,10 +95,11 @@
                     <li><a href="contact.html">Contact</a></li>                    
                 </ul>
             </li>
-            <li class="custom_toggle"><a href="{% url 'logout' %}" class="menu-toggle"><i class="zmdi zmdi-apps"></i><span>LOGOUT</span></a>
+            
                 
             </li>
             {% endif %}
+            <li class="custom_toggle"><a href="{% url 'logout' %}" class="menu-toggle"><i class="zmdi zmdi-apps"></i><span>LOGOUT</span></a>
         </ul>
     </div>
 </aside>
