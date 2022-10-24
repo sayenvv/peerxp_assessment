@@ -1,0 +1,118 @@
+{% extends 'main_template.html' %}
+{% block contents %}
+<div class="body_scroll">
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h2>Basic Form Elements</h2>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html"><i class="zmdi zmdi-home"></i> Aero</a></li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0);">Forms</a></li>
+                    <li class="breadcrumb-item active">Basic Form</li>
+                </ul>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">                
+                <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button"><i class="zmdi zmdi-arrow-right"></i></button>                                
+            </div>
+        </div>
+    </div>
+    
+    <div class="container-fluid">
+        <!-- Input -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="alert alert-warning" role="alert">
+                    <strong>Bootstrap</strong> Better check yourself, <a target="_blank" href="https://getbootstrap.com/docs/4.2/components/input-group/">View More</a>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true"><i class="zmdi zmdi-close"></i></span>
+                    </button>
+                </div>
+                <div class="card">
+                    <form action="{% url 'add_users' %}" method="post">
+                        {% csrf_token %}
+                        <div class="body">
+                            
+                            
+                            <h2 class="card-inside-title">Add Users</h2>
+                            <div class="row clearfix">
+                                <div class="col-sm-6">
+                                    <div class="form-group">    
+                                        <label for="id_username">{{forms.username.label}}</label>
+                                        <span>{{ forms.username.errors }}</span>                                    
+                                        {{forms.username}}
+                                        <span>{{ forms.username.help_text }}</span>                                  
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">   
+                                        <label for="id_email">{{forms.email.label}}</label>   
+                                        <span>{{ forms.email.errors }}</span>                                  
+                                        {{forms.email}} 
+                                        <span>{{ forms.email.help_text }}</span>                                   
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row clearfix">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="id_phone">{{forms.phone.label}}</label>   
+                                        <span>{{ forms.phone.errors }}</span>                                       
+                                        {{forms.phone}}
+                                        <span>{{ forms.phone.help_text }}</span>  
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">  
+                                        <label for="id_user_department">{{forms.user_department.label}}</label>                                  
+                                        <span>{{ forms.user_department.errors }}</span>    
+                                        {{forms.user_department}}
+                                        <span>{{ forms.user_department.help_text }}</span>  
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row clearfix">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="id_user_roles">{{forms.user_roles.label}}</label>                                   
+                                        <span>{{form.user_roles.errors}}</span>
+                                        {{forms.user_roles}}   
+                                        <span>{{ forms.user_roles.help_text }}</span>                                  
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">    
+                                        <label for="id_password1">{{forms.password1.label}}</label>                                
+                                        <span>{{form.password1.errors}}</span>
+                                        {{forms.password1}}    
+                                        <span>{{ forms.password1.help_text }}</span>                               
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row clearfix">
+                                
+                                <div class="col-sm-6">
+                                    <div class="form-group">    
+                                        <span>{{forms.password2.errors}}</span>
+                                        <label for="id_password1">{{forms.password2.label}}</label>                                
+                                        {{forms.password2}}     
+                                        <span>{{ forms.password2.help_text }}</span>                           
+                                    </div>
+                                </div>
+                            </div>
+                                        
+                            
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Add Users</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        
+
+        
+    </div>
+</div>
+{% endblock contents %}
