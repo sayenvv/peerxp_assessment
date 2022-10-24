@@ -13,3 +13,7 @@
  3) there you can see 2 files inside settings 
    - one for local and dev for production we use postgresql in production
    
+   
+ sorry i dont get enough time because of the office work....
+ if you give time i wille make it perfect..
+   
