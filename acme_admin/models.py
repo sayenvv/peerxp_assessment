@@ -62,3 +62,4 @@ class Tickets(AbstractDateTime):
     ticket_id = models.CharField(max_length=100)
     subject = models.TextField()
     priority = models.CharField(max_length=100,choices=priority)
+    

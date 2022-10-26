@@ -88,3 +88,4 @@ class AssignDepartmentForm(UserChangeForm):
         super(AssignDepartmentForm, self).__init__(*args, **kwargs)
         for name in self.fields.keys():
             self.fields[name].widget.attrs.update({'class':'form-control '})
+

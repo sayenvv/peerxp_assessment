@@ -15,11 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from acme_admin.views import SignInView
+from .views import *
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('',SignInView.as_view(),name='signin'),
-    path('acme-admin/', include('acme_admin.urls')),
-    path('acme-users/', include('acme_users.urls')),
+    path('index', UserIndexView.as_view(),name='user_index'),
+    path('my_tickets/', list_MyTickets.as_view(),name='my_tickets'),
+    path('add_tickets/', CreateMyTickets.as_view(),name='add_tickets'),
 ]

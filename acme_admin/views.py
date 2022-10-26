@@ -9,9 +9,10 @@ from django.views import View
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import permission_required
 from Acme_Support.helpers import EmailOrUsernameModelBackend as user
-
+from acme_users.forms import CreateTicketsForm
+from Acme_Support.decorators import method_decorator_adaptor
 from .forms import *
-from .models import Department
+from .models import Department, Tickets
 
 # Create your views here.
 
@@ -60,6 +61,8 @@ class SignInView(View):
         user_ = user.authenticate(self,username=username,password=password)
         if user_ is not None:
             request.session['user'] = user_.id
+            if user_.is_user:
+                return redirect('user_index')
             return redirect('index_url')
         return render(request,self.render_template)
 
@@ -143,6 +146,7 @@ class SetPermissionsView(DetailView):
 
         return render(request,self.render_template,locals())
 
+    @method_decorator_adaptor(permission_required, 'permission.can_add_permission')
     def post(self,request,**kwargs):
         roles_id = kwargs.get('slug')
         user = get_user_model().objects.get(pk=request.session.get('user',None))
@@ -271,6 +275,7 @@ class CreateUsersView(CreateView):
 
         return render(request,self.render_template,locals())
 
+
 class AssignDepartmentView(UpdateView):
     model = get_user_model()
     render_template = 'users/assign_department.html'
@@ -296,7 +301,30 @@ class AssignDepartmentView(UpdateView):
         return render(request,self.render_template)
 
 
-class TicketVIEW(View):
+class TicketVIEW(ListView   ):
+    render_template = 'tickets/list_tickets.html'
+    model = Tickets
 
     def get(self,request):
-        return
+        queryset = self.get_queryset().all()
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
+        return render(request,self.render_template,locals())
+
+class CreateTicketsView(CreateView):
+    model = Tickets
+    form_class = CreateTicketsForm
+    render_template = 'tickets/create_tickets.html'
+    redirect_url = 'list_ticket'
+
+    def get(self,request):
+        forms = self.form_class()
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
+        return render(request,self.render_template,locals())
+
+    def post(self,request):
+        forms = self.form_class(request.POST)
+        user = get_user_model().objects.get(pk=request.session.get('user',None))
+        if forms.is_valid():
+            forms.save(request)
+            return redirect(self.redirect_url)
+        return render(request,self.render_template,locals())

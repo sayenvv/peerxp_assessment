@@ -41,11 +41,11 @@ INSTALLED_APPS = [
 ]
 
 PROJECT_APPS = [
-    'acme_admin'
+    'acme_admin',
+    'acme_users'
 ]
 
 THIRD_PARTY_APPS = [
-    'django_select2'
 ]
 
 INSTALLED_APPS = INSTALLED_APPS + PROJECT_APPS + THIRD_PARTY_APPS

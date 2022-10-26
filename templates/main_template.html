@@ -74,7 +74,7 @@
             </li>
             <li class="active open"><a href="{% url 'index_url' %}"><i class="zmdi zmdi-home"></i><span>DASHBOARD</span></a></li>
             {% if user.is_user %}
-            <li class="custom_toggle"><a href="{% url 'list_ticket' %}" class="menu-toggle"><i class="zmdi zmdi-apps"></i><span>My tickets</span></a>
+            <li class="custom_toggle"><a href="{% url 'my_tickets' %}" class="menu-toggle"><i class="zmdi zmdi-apps"></i><span>My tickets</span></a>
                 
             </li>
             {% else %}
@@ -87,13 +87,8 @@
             <li class="custom_toggle"><a href="{% url 'list_departments' %}" class="menu-toggle"><i class="zmdi zmdi-apps"></i><span>DEPARTMENT</span></a>
                 
             </li>
-            <li class="custom_toggle"><a href="javascript:void(0);" class="menu-toggle"><i class="zmdi zmdi-apps"></i><span>TICKETS</span></a>
-                <ul class="ml-menu">
-                    <li><a href="mail-inbox.html">VIEW USERS</a></li>
-                    <li><a href="chat.html">Chat Apps</a></li>
-                    <li><a href="events.html">Calendar</a></li>
-                    <li><a href="contact.html">Contact</a></li>                    
-                </ul>
+            <li class="custom_toggle"><a href="{% url 'list_ticket' %}" class="menu-toggle"><i class="zmdi zmdi-apps"></i><span>TICKETS</span></a>
+                
             </li>
             
                 

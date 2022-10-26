@@ -13,7 +13,7 @@ from django.urls import path,include
 from .views import *
 
 urlpatterns = [
-    path('',SignInView.as_view(),name='signin'),
+    
     path('logout',LogoutView.as_view(),name='logout'),
     path('index',IndexView.as_view(),name='index_url'),
     path('users/',include([
@@ -38,7 +38,8 @@ urlpatterns = [
     ])),
 
     path('tickets/',include([
-        path('my-tickets',TicketVIEW.as_view(),name='list_ticket'),
+        path('all-tickets',TicketVIEW.as_view(),name='list_ticket'),
+        path('create-tickets',CreateTicketsView.as_view(),name='create_ticket'),
 
     ]))
     

@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 
+
 class EmailOrUsernameModelBackend(ModelBackend):
     """
     This is a ModelBacked that allows authentication
@@ -25,3 +26,13 @@ class EmailOrUsernameModelBackend(ModelBackend):
             return get_user_model().objects.get(pk=username)
         except get_user_model().DoesNotExist:
             return None
+
+
+def get_user_or_none(**kwargs):
+    try:
+        objects = get_user_model().objects.get(**kwargs)
+    except Exception:
+        objects = None
+    return objects
+
+
