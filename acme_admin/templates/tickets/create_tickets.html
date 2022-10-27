@@ -21,12 +21,7 @@
         <!-- Input -->
         <div class="row clearfix">
             <div class="col-lg-12 col-md-12 col-sm-12">
-                <div class="alert alert-warning" role="alert">
-                    <strong>Bootstrap</strong> Better check yourself, <a target="_blank" href="https://getbootstrap.com/docs/4.2/components/input-group/">View More</a>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true"><i class="zmdi zmdi-close"></i></span>
-                    </button>
-                </div>
+               
                 <div class="card">
                     <form action="{% url 'create_ticket' %}" method="post">
                         {% csrf_token %}

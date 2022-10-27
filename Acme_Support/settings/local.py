@@ -139,3 +139,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 token = '4D1FqA0fgURLGlhsYTW5fvknEMjYfzTmn5iSVW2J'
 client = '37ffa4006355f9a206351ae42b6b1de60404a739c2cf578e6074458c1741e7bf'
+
+# message_settings_her
+
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}

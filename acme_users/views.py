@@ -5,6 +5,9 @@ from django.contrib.auth.decorators import permission_required
 from acme_admin.models import Tickets
 from .forms import *
 from Acme_Support.decorators import method_decorator_adaptor
+import requests
+from django.contrib import messages
+from Acme_Support.utils_constants import *
 
 # Create your views here.
 class UserIndexView(TemplateView):
@@ -38,6 +41,9 @@ class CreateMyTickets(CreateView):
     form_class = CreateTicketsForm
     render_template = 'tickets/create_tickets.html'
     redirect_url = 'my_tickets'
+    zendesk_domain = ''
+    '''your required api url provide here'''
+    url = '%s/api/v2/tickets'%(zendesk_domain)
 
     def get(self,request):
         forms = self.form_class()
@@ -48,6 +54,22 @@ class CreateMyTickets(CreateView):
         forms = self.form_class(request.POST)
         user = get_user_model().objects.get(pk=request.session.get('user',None))
         if forms.is_valid():
-            forms.save(request)
+            instance = forms.save(request)
+            params = {
+                "ticket": {
+                    "comment": {
+                    "body": "The smoke is very colorful."
+                    },
+                    "priority": instance.priority,
+                    "subject": instance.subject
+                }
+            }
+            '''
+            change method from get to post when calling url eith post method
+            params that we giving to urls as arguments
+            '''
+            response = requests.post(url,params=params_)
+            if response.status_code == 200:
+                messages.success(request,message_constants['ticket_created'])
             return redirect(self.redirect_url)
         return render(request,self.render_template,locals())
