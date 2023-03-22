@@ -40,6 +40,7 @@ urlpatterns = [
     path('tickets/',include([
         path('all-tickets',TicketVIEW.as_view(),name='list_ticket'),
         path('create-tickets',CreateTicketsView.as_view(),name='create_ticket'),
+        path('delete-tickets/<int:pk>',DeleteTicketsView.as_view(),name='delete_ticket'),
 
     ]))
     

@@ -32,25 +32,30 @@
                             <div class="row clearfix">
                                 <div class="col-sm-6">
                                     <div class="form-group">    
-                                        <label for="id_username">{{forms.ticket_id.label}}</label>                                    
-                                        {{forms.ticket_id}}
-                                        <span>{{ forms.ticket_id.help_text }}</span>                                  
+                                        <label for="id_username">{{forms.subject.label}}</label>                                    
+                                        {{forms.subject}}
+                                        <span>{{ forms.subject.help_text }}</span>                                  
                                     </div>
                                 </div>
+                                
                                 <div class="col-sm-6">
                                     <div class="form-group">   
-                                        <label for="id_email">{{forms.priority.label}}</label>                                 
-                                        {{forms.priority}} 
-                                        <span>{{ forms.priority.help_text }}</span>                                   
+                                        <label for="id_email">priority</label>                                 
+                                        <select class="form-control">
+                                            <option value="urgent">Urgent</option>
+                                            <option value="normal">Normal</option>
+                                        </select>
+                                        <span></span>                                   
                                     </div>
                                 </div>
                             </div>
                             <div class="row clearfix">
                                 <div class="col-sm-6">
+                                    
                                     <div class="form-group">    
-                                        <label for="id_username">{{forms.subject.label}}</label>                                    
-                                        {{forms.subject}}
-                                        <span>{{ forms.subject.help_text }}</span>                                  
+                                        <label for="id_username">{{forms.body.label}}</label>                                    
+                                        {{forms.body}}
+                                        <span>{{ forms.body.help_text }}</span>                                  
                                     </div>
                                 </div>
                                 

@@ -6,6 +6,7 @@ from django.contrib.auth.models import Group
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView,ListView,CreateView,UpdateView,DetailView,DeleteView
 from django.contrib.auth.decorators import login_required
+from django.http.response import HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
@@ -64,9 +65,7 @@ class SignInView(View):
         '''
         username = request.POST.get('username',None)
         password = request.POST.get('password',None)
-        user_ = get_user_model().objects.get(username=username)
-        # user_ = user.authenticate(self,username=username,password=password)
-        print(user_)
+        user_ = user.authenticate(self,username=username,password=password)
         if user_ is not None:
             request.session['user'] = user_.id
             if user_.is_user:
@@ -316,19 +315,16 @@ class TicketVIEW(ListView):
     def get(self,request):
         email = os.getenv("email")
         token = os.getenv("token")
-        print(token,"+++++++")
         url = "https://cloudium.zendesk.com/api/v2/tickets"
         username = email + '/token'
         password = token
-        # queryset = self.get_queryset().all()
         user = get_user_model().objects.get(pk=request.session.get('user',None))
         response = requests.get(
                 url,
                 auth=(username, password)
             )
-        print(response.status_code,"++++")
+        
         queryset = response.json().get('tickets')
-        # print([i for i in response.json().get('tickets')][0])
         return render(request,self.render_template,locals())
     
 class CreateTicketsView(CreateView):
@@ -363,14 +359,36 @@ class CreateTicketsView(CreateView):
         forms = self.form_class(request.POST)
         user = get_user_model().objects.get(pk=request.session.get('user',None))
         if forms.is_valid():
-            priority = forms.cleaned_data.get("priority")
+            priority = request.POST.get("priority")
             subject = forms.cleaned_data.get("subject")
-            payload.get("ticket").update({"priority":priority,"subject":subject})
+            body = forms.cleaned_data.get("body")
+
+            payload.get("ticket").update({"priority":priority,"subject":subject,"body":body})
             response = requests.post(
                 url,
                 auth=(username, password),
                 json=json.loads(json.dumps(payload))
             )
-            # if response.status_code()
-            return redirect(self.redirect_url)
+            if response.status_code == 201:
+                return redirect(self.redirect_url)
+            else:
+                return HttpResponseRedirect(request.path_info) 
+        else:
+            print(forms.errors)
         return render(request,self.render_template,locals())
+    
+class DeleteTicketsView(View):
+
+    def get(self,request,**kwargs):
+        email = os.getenv("email")
+        token = os.getenv("token")
+        username = email + '/token'
+        password = token
+
+        pk = kwargs.get("pk")
+        url = f"https://cloudium.zendesk.com/api/v2/tickets/{pk}"
+        response = requests.delete(url,auth=(username,password))
+        if response.status_code==204:
+            return redirect("list_ticket")
+        else:
+            return HttpResponseRedirect(request.path_info) 
