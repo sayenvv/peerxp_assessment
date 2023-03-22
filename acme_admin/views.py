@@ -1,3 +1,7 @@
+import requests
+import json
+import os
+from dotenv import load_dotenv
 from django.contrib.auth.models import Group
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView,ListView,CreateView,UpdateView,DetailView,DeleteView
@@ -12,11 +16,11 @@ from Acme_Support.helpers import EmailOrUsernameModelBackend as user
 from acme_users.forms import CreateTicketsForm
 from Acme_Support.decorators import method_decorator_adaptor
 from .forms import *
-import requests
-import json
 from .models import Department, Tickets
 
+load_dotenv()
 # Create your views here.
+
 
 class IndexView(TemplateView):
     '''
@@ -310,8 +314,21 @@ class TicketVIEW(ListView):
     model = Tickets
 
     def get(self,request):
-        queryset = self.get_queryset().all()
+        email = os.getenv("email")
+        token = os.getenv("token")
+        print(token,"+++++++")
+        url = "https://cloudium.zendesk.com/api/v2/tickets"
+        username = email + '/token'
+        password = token
+        # queryset = self.get_queryset().all()
         user = get_user_model().objects.get(pk=request.session.get('user',None))
+        response = requests.get(
+                url,
+                auth=(username, password)
+            )
+        print(response.status_code,"++++")
+        queryset = response.json().get('tickets')
+        # print([i for i in response.json().get('tickets')][0])
         return render(request,self.render_template,locals())
     
 class CreateTicketsView(CreateView):
@@ -327,11 +344,12 @@ class CreateTicketsView(CreateView):
 
     def post(self,request):
         
-        email = "sayen.v@cloudium.io"
-        token = "v48Kgz10Xzi89W4Fg3uVWQOmkuYjbVFtgqVOZNFc"
+        email = os.getenv("email")
+        token = os.getenv("token")
+        
         url = "https://cloudium.zendesk.com/api/v2/tickets"
-        username = 'sayen.v@cloudium.io' + '/token'
-        password = 'v48Kgz10Xzi89W4Fg3uVWQOmkuYjbVFtgqVOZNFc'
+        username = email + '/token'
+        password = token
         payload = {
         "ticket": {
             "comment": {
@@ -341,13 +359,11 @@ class CreateTicketsView(CreateView):
             "subject": "My printer is on fire!"
         }
         }
-        headers ={'Content-Type': 'application/json','Authorization': f'Basic {email}/token:{token}'}
 
         forms = self.form_class(request.POST)
         user = get_user_model().objects.get(pk=request.session.get('user',None))
         if forms.is_valid():
             priority = forms.cleaned_data.get("priority")
-            print(priority)
             subject = forms.cleaned_data.get("subject")
             payload.get("ticket").update({"priority":priority,"subject":subject})
             response = requests.post(
@@ -355,28 +371,6 @@ class CreateTicketsView(CreateView):
                 auth=(username, password),
                 json=json.loads(json.dumps(payload))
             )
-            print(response.json(),"+++++")
-            forms.save(request)
+            # if response.status_code()
             return redirect(self.redirect_url)
         return render(request,self.render_template,locals())
-    
-    # url = "https://cloudium.zendesk.com/api/v2/tickets"
-    #     user = 'sayen.v@cloudium.io' + '/token'
-    #     password = 'v48Kgz10Xzi89W4Fg3uVWQOmkuYjbVFtgqVOZNFc'
-    #     dic = {"ticket": {"comment": {"body": "The smoke is very colorful."},"priority": "priority","subject":"subject"}}
-
-    #     user = get_user_model().objects.get(pk=request.session.get('user',None))
-    #     forms = self.form_class(request.POST)
-    #     if forms.is_valid():
-    #         priority = forms.cleaned_data.get("priority")
-    #         subject = forms.cleaned_data.get("subject")
-    #         dic.get("ticket").update({"priority":priority,"subject":subject})
-    #         response = requests.post(
-    #             url,
-    #             auth=(user, password),
-    #             json=json.dumps(dic)
-    #         )
-    #         print(response.json(),"+++++")
-    #         forms.save(request)
-    #         return redirect(self.redirect_url)
-    #     return render(request,self.render_template,locals())
