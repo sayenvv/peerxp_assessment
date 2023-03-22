@@ -32,7 +32,6 @@ class CreateUserForm(UserCreationForm):
 
 
     def save(self,request,commit=True,*args,**kwargs):
-        print([i for i in args])
         m = super(CreateUserForm, self).save(commit=False, *args, **kwargs)
         m_new = copy_model_instance(m)
         m_new.is_user = True

@@ -12,6 +12,8 @@ from Acme_Support.helpers import EmailOrUsernameModelBackend as user
 from acme_users.forms import CreateTicketsForm
 from Acme_Support.decorators import method_decorator_adaptor
 from .forms import *
+import requests
+import json
 from .models import Department, Tickets
 
 # Create your views here.
@@ -58,7 +60,9 @@ class SignInView(View):
         '''
         username = request.POST.get('username',None)
         password = request.POST.get('password',None)
-        user_ = user.authenticate(self,username=username,password=password)
+        user_ = get_user_model().objects.get(username=username)
+        # user_ = user.authenticate(self,username=username,password=password)
+        print(user_)
         if user_ is not None:
             request.session['user'] = user_.id
             if user_.is_user:
@@ -301,7 +305,7 @@ class AssignDepartmentView(UpdateView):
         return render(request,self.render_template)
 
 
-class TicketVIEW(ListView   ):
+class TicketVIEW(ListView):
     render_template = 'tickets/list_tickets.html'
     model = Tickets
 
@@ -309,7 +313,7 @@ class TicketVIEW(ListView   ):
         queryset = self.get_queryset().all()
         user = get_user_model().objects.get(pk=request.session.get('user',None))
         return render(request,self.render_template,locals())
-
+    
 class CreateTicketsView(CreateView):
     model = Tickets
     form_class = CreateTicketsForm
@@ -322,9 +326,57 @@ class CreateTicketsView(CreateView):
         return render(request,self.render_template,locals())
 
     def post(self,request):
+        
+        email = "sayen.v@cloudium.io"
+        token = "v48Kgz10Xzi89W4Fg3uVWQOmkuYjbVFtgqVOZNFc"
+        url = "https://cloudium.zendesk.com/api/v2/tickets"
+        username = 'sayen.v@cloudium.io' + '/token'
+        password = 'v48Kgz10Xzi89W4Fg3uVWQOmkuYjbVFtgqVOZNFc'
+        payload = {
+        "ticket": {
+            "comment": {
+            "body": "The smoke is very colorful."
+            },
+            "priority": "urgent",
+            "subject": "My printer is on fire!"
+        }
+        }
+        headers ={'Content-Type': 'application/json','Authorization': f'Basic {email}/token:{token}'}
+
         forms = self.form_class(request.POST)
         user = get_user_model().objects.get(pk=request.session.get('user',None))
         if forms.is_valid():
+            priority = forms.cleaned_data.get("priority")
+            print(priority)
+            subject = forms.cleaned_data.get("subject")
+            payload.get("ticket").update({"priority":priority,"subject":subject})
+            response = requests.post(
+                url,
+                auth=(username, password),
+                json=json.loads(json.dumps(payload))
+            )
+            print(response.json(),"+++++")
             forms.save(request)
             return redirect(self.redirect_url)
         return render(request,self.render_template,locals())
+    
+    # url = "https://cloudium.zendesk.com/api/v2/tickets"
+    #     user = 'sayen.v@cloudium.io' + '/token'
+    #     password = 'v48Kgz10Xzi89W4Fg3uVWQOmkuYjbVFtgqVOZNFc'
+    #     dic = {"ticket": {"comment": {"body": "The smoke is very colorful."},"priority": "priority","subject":"subject"}}
+
+    #     user = get_user_model().objects.get(pk=request.session.get('user',None))
+    #     forms = self.form_class(request.POST)
+    #     if forms.is_valid():
+    #         priority = forms.cleaned_data.get("priority")
+    #         subject = forms.cleaned_data.get("subject")
+    #         dic.get("ticket").update({"priority":priority,"subject":subject})
+    #         response = requests.post(
+    #             url,
+    #             auth=(user, password),
+    #             json=json.dumps(dic)
+    #         )
+    #         print(response.json(),"+++++")
+    #         forms.save(request)
+    #         return redirect(self.redirect_url)
+    #     return render(request,self.render_template,locals())

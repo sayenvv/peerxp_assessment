@@ -54,7 +54,6 @@ class CreateMyTickets(CreateView):
         forms = self.form_class(request.POST)
         user = get_user_model().objects.get(pk=request.session.get('user',None))
         if forms.is_valid():
-            instance = forms.save(request)
             params = {
                 "ticket": {
                     "comment": {

@@ -55,7 +55,7 @@ Group.add_to_class(
 
 class Tickets(AbstractDateTime):
     priority = (
-        ('first','First'),
+        ('first','urgent'),
         ('second','Second'),
     )
 
